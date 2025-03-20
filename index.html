@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kinball Scoreboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Kinball Scoreboard</h1>
+
+    <!-- Score Display -->
+    <div class="scoreboard">
+        <div class="team" id="bleu-team">
+            <div class="score" id="bleu-score">00</div>
+            <button onclick="addFault('bleu')" class="bleux fault-btn"></button>
+        </div>
+        <div class="team" id="gris-team">
+            <div class="score" id="gris-score">00</div>
+            <button onclick="addFault('gris')" class="grisx fault-btn"></button>
+        </div>
+        <div class="team" id="noir-team">
+            <div class="score" id="noir-score">00</div>
+            <button onclick="addFault('noir')" class="noirx fault-btn"></button>
+        </div>
+    </div>
+
+    <!-- Timer and Reset Button Container -->
+    <div class="timer-controls">
+        <!-- Timer Container with Dropdown -->
+        <div class="timer-container" id="timer-container">
+            <div class="timer-header" onclick="toggleTimer()">
+                <h2>Timer <span class="arrow">▼</span></h2>
+            </div>
+            <div class="timer-content" id="timer-content">
+                <div id="timer">10:00</div>
+                <button onclick="startTimer()" class="timer-btn">Start</button>
+                <button onclick="stopTimer()" class="timer-btn">Stop</button>
+                <button onclick="continueTimer()" class="timer-btn">Continue</button>
+            </div>
+        </div>
+
+        <!-- Reset Button Wrapper for Positioning -->
+        <div class="reset-wrapper">
+            <button onclick="resetGame()" class="reset">Reset Game</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        let scores = { bleu: 0, gris: 0, noir: 0 };
+        let gamePhase = 'normal'; // 'normal' or 'final'
+        let eliminatedTeam = null;
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerId = null;
+        let isTimerOpen = false; // Track timer dropdown state
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('bleu-score').textContent = scores.bleu.toString().padStart(2, '0');
+            document.getElementById('gris-score').textContent = scores.gris.toString().padStart(2, '0');
+            document.getElementById('noir-score').textContent = scores.noir.toString().padStart(2, '0');
+
+            // Gray out eliminated team
+            if (eliminatedTeam) {
+                document.getElementById(`${eliminatedTeam}-team`).classList.add('eliminated');
+            }
+        }
+
+        // Add fault logic
+        function addFault(faultTeam) {
+            if (eliminatedTeam && faultTeam === eliminatedTeam) {
+                alert(`${faultTeam.charAt(0).toUpperCase() + faultTeam.slice(1)} team is out! No points can be added.`);
+                return; // Exit function if clicking the eliminated team
+            }
+
+            if (gamePhase === 'normal') {
+                // Normal phase: other two teams gain 1 point each
+                const teams = ['bleu', 'gris', 'noir'].filter(t => t !== faultTeam);
+                scores[teams[0]]++;
+                scores[teams[1]]++;
+
+                // Check for critical score (first team to 9 after 8)
+                const maxScore = Math.max(scores.bleu, scores.gris, scores.noir);
+                if (maxScore >= 8 && Object.values(scores).filter(s => s >= 9).length > 0) {
+                    gamePhase = 'final';
+                    const minScore = Math.min(scores.bleu, scores.gris, scores.noir);
+                    eliminatedTeam = Object.keys(scores).find(t => scores[t] === minScore && scores[t] !== maxScore);
+                }
+            } else if (gamePhase === 'final' && eliminatedTeam) {
+                // Final phase: fault by one team adds 1 point to the other
+                const activeTeams = ['bleu', 'gris', 'noir'].filter(t => t !== eliminatedTeam);
+                const faultingTeam = faultTeam;
+                const gainingTeam = activeTeams.find(t => t !== faultingTeam);
+                if (gainingTeam) {
+                    scores[gainingTeam]++;
+                }
+
+                // Check for target score (11 points)
+                const maxActiveScore = Math.max(
+                    scores[activeTeams[0]],
+                    scores[activeTeams[1]] || 0
+                );
+                if (maxActiveScore >= 11) {
+                    // Update the display first
+                    updateScoreDisplay();
+                    // Delay the alert to ensure the score is visible before the pop-up
+                    setTimeout(() => {
+                        alert(`${activeTeams.find(t => scores[t] === maxActiveScore)} wins!`);
+                    }, 100); // 100ms delay
+                    return; // Exit to prevent further updates after win
+                }
+            }
+            updateScoreDisplay();
+        }
+
+        // Timer functions
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        }
+
+        function startTimer() {
+            if (!timerId) {
+                timerId = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerId);
+                        timerId = null;
+                        alert("Time's up!");
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+        }
+
+        function continueTimer() {
+            if (!timerId && timeLeft > 0) {
+                timerId = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerId);
+                        timerId = null;
+                        alert("Time's up!");
+                    }
+                }, 1000);
+            }
+        }
+
+        // Toggle timer dropdown
+        function toggleTimer() {
+            const timerContent = document.getElementById('timer-content');
+            const arrow = document.querySelector('.timer-header .arrow');
+            isTimerOpen = !isTimerOpen;
+            timerContent.classList.toggle('open', isTimerOpen);
+            arrow.textContent = isTimerOpen ? '▲' : '▼';
+        }
+
+        // Reset game
+        function resetGame() {
+            scores = { bleu: 0, gris: 0, noir: 0 };
+            gamePhase = 'normal';
+            eliminatedTeam = null;
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+            timeLeft = 600;
+            updateScoreDisplay();
+            updateTimerDisplay();
+            document.getElementById('bleu-team').classList.remove('eliminated');
+            document.getElementById('gris-team').classList.remove('eliminated');
+            document.getElementById('noir-team').classList.remove('eliminated');
+
+            // Collapse timer on reset
+            const timerContent = document.getElementById('timer-content');
+            const arrow = document.querySelector('.timer-header .arrow');
+            isTimerOpen = false;
+            timerContent.classList.remove('open');
+            arrow.textContent = '▼';
+        }
+
+        // Initialize
+        updateScoreDisplay();
+        updateTimerDisplay();
+    </script>
+</body>
+</html>

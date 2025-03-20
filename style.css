@@ -1,0 +1,236 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+h1 {
+    color: #333;
+    font-size: 36px;
+    margin: 20px 0;
+    text-transform: uppercase;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 0 auto;
+    max-width: 600px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    margin: 0;
+}
+
+.score {
+    font-size: 80px;
+    font-weight: bold;
+    color: #000;
+    background: #fff;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    width: 120px;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.fault-btn {
+    margin-top: -5px;
+    width: 116px;
+    height: 60px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    color: white;
+    box-sizing: border-box;
+}
+
+/* Color adjustments integrated into buttons */
+.bleux {
+    background: linear-gradient(to right, #1e90ff 50%, #ff69b4 50%);
+}
+.grisx { background-color: #808080; }
+.noirx { background-color: #28282B; }
+
+.eliminated .score {
+    color: #808080;
+    background: #ddd;
+}
+
+.timer-controls {
+    position: relative; /* For absolute positioning of reset button */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the top */
+    margin-top: 20px;
+    gap: 40px; /* Increased gap between timer and reset button */
+    max-width: 600px; /* Match scoreboard width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.timer-container {
+    padding: 10px 20px;
+    margin-right: 100px;
+    border-radius: 10px;
+    background-color: lemonchiffon;
+    box-sizing: border-box;
+}
+
+.timer-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timer-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.timer-header .arrow {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.timer-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.timer-content.open {
+    max-height: 200px;
+}
+
+.timer-btn {
+    color: #333;
+    background-color: #fff;
+    margin: 5px;
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#timer {
+    font-size: 40px;
+    margin: 10px 0;
+    color: #333;
+}
+
+.reset-wrapper {
+    position: absolute;
+    top: 0; /* Align with the top of the timer-controls */
+    right: 0; /* Position on the right side */
+}
+
+button.reset {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #FF4500;
+    color: white;
+    text-transform: uppercase;
+}
+
+button.reset:hover {
+    background-color: #e03e00;
+}
+
+/* Media Queries for Smartphones (e.g., iPhone 13) */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .scoreboard {
+        flex-direction: column;
+        padding: 5px;
+        max-width: 100%;
+    }
+
+    .team {
+        margin: 5px 0;
+        width: 100%;
+    }
+
+    .score {
+        font-size: 60px;
+        width: 100px;
+        padding: 5px;
+    }
+
+    .fault-btn {
+        width: 120px;
+        height: 50px;
+        font-size: 14px;
+    }
+
+    .timer-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .timer-container {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .timer-header h2 {
+        font-size: 20px;
+    }
+
+    .timer-header .arrow {
+        font-size: 16px;
+    }
+
+    #timer {
+        font-size: 30px;
+        margin: 5px 0;
+    }
+
+    .timer-btn {
+        padding: 5px 8px;
+        font-size: 14px;
+    }
+
+    .reset-wrapper {
+        position: static; /* Remove absolute positioning on mobile */
+        margin-top: 10px;
+    }
+
+    button.reset {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
